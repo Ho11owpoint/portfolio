@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import MotorControlTuner from "./MotorControlTuner";
 
 // ══════════════════════════════════════════════════════════════════════
 //  SCROLL ANIMATION HOOK
@@ -261,7 +262,7 @@ function ExperienceCard({ exp, index }) {
   );
 }
 
-function ProjectCard({ project, index }) {
+function ProjectCard({ project, index, onOpenDemo }) {
   return (
     <Reveal delay={index * 0.12}>
       <div style={{
@@ -285,7 +286,7 @@ function ProjectCard({ project, index }) {
         <p style={{ fontFamily: body, fontSize: 13, color: C.textSoft, lineHeight: 1.7, margin: "0 0 16px 0", flex: 1 }}>
           {project.description}
         </p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginBottom: project.status === "Live Demo" ? 14 : 0 }}>
           {project.tags.map(tag => (
             <span key={tag} style={{
               fontFamily: mono, fontSize: 9, padding: "3px 8px",
@@ -294,6 +295,18 @@ function ProjectCard({ project, index }) {
             }}>{tag}</span>
           ))}
         </div>
+        {project.status === "Live Demo" && onOpenDemo && (
+          <button onClick={onOpenDemo} style={{
+            background: `${C.green}15`, border: `1px solid ${C.green}44`, borderRadius: 8,
+            padding: "10px 0", fontFamily: mono, fontSize: 11, fontWeight: 600,
+            color: C.green, cursor: "pointer", transition: "all 0.2s", width: "100%",
+          }}
+            onMouseEnter={e => { e.currentTarget.style.background = `${C.green}25`; e.currentTarget.style.transform = "translateY(-1px)"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = `${C.green}15`; e.currentTarget.style.transform = "translateY(0)"; }}
+          >
+            Launch Interactive Demo
+          </button>
+        )}
       </div>
     </Reveal>
   );
@@ -304,6 +317,7 @@ function ProjectCard({ project, index }) {
 // ══════════════════════════════════════════════════════════════════════
 export default function Portfolio() {
   const [activeSection, setActiveSection] = useState("about");
+  const [showDemo, setShowDemo] = useState(false);
   const sectionRefs = useRef({});
 
   const setRef = useCallback((id) => (el) => { sectionRefs.current[id] = el; }, []);
@@ -482,7 +496,7 @@ export default function Portfolio() {
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 32px" }}>
           <Reveal><SectionTitle label="02" title="Projects" /></Reveal>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 20 }}>
-            {PROJECTS.map((p, i) => <ProjectCard key={p.title} project={p} index={i} />)}
+            {PROJECTS.map((p, i) => <ProjectCard key={p.title} project={p} index={i} onOpenDemo={p.status === "Live Demo" ? () => setShowDemo(true) : null} />)}
           </div>
         </div>
       </section>
@@ -585,6 +599,32 @@ export default function Portfolio() {
           </div>
         </div>
       </footer>
+
+      {/* ═══ DEMO OVERLAY ══════════════════════════════════════════ */}
+      {showDemo && (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 9999,
+          background: "#0b0b09",
+          animation: "fadeIn 0.3s ease both",
+        }}>
+          <button onClick={() => setShowDemo(false)} style={{
+            position: "fixed", top: 16, right: 20, zIndex: 10000,
+            background: `${C.card}ee`, border: `1px solid ${C.border}`,
+            borderRadius: 8, padding: "8px 16px", cursor: "pointer",
+            fontFamily: mono, fontSize: 11, color: C.textSoft,
+            display: "flex", alignItems: "center", gap: 8,
+            backdropFilter: "blur(8px)", transition: "all 0.2s",
+          }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = C.goldDim; e.currentTarget.style.color = C.gold; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.color = C.textSoft; }}
+          >
+            ← Back to Portfolio
+          </button>
+          <div style={{ width: "100%", height: "100%", overflow: "auto" }}>
+            <MotorControlTuner />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
