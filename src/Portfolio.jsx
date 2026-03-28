@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import MotorControlTuner from "./MotorControlTuner";
+import PLCSimulator from "./PLCSimulator";
 
 // ══════════════════════════════════════════════════════════════════════
 //  SCROLL ANIMATION HOOK
@@ -34,11 +35,11 @@ function Reveal({ children, delay = 0, direction = "up", style = {} }) {
 //  DESIGN TOKENS
 // ══════════════════════════════════════════════════════════════════════
 const C = {
-  bg: "#09090a", bgAlt: "#0e0e10", panel: "#131315", card: "#17171a",
-  border: "#1f1f23", borderLight: "#2a2a30",
+  bg: "#161a22", bgAlt: "#1b2029", panel: "#1f242e", card: "#232933",
+  border: "#2e3542", borderLight: "#3a4250",
   gold: "#c9a227", goldBright: "#e0b830", goldDim: "#c9a22733", goldSubtle: "#c9a22712",
-  green: "#3d9e4f", blue: "#3d7eb5", orange: "#c47a2e", red: "#b54a4a",
-  text: "#d0d0c4", textSoft: "#a0a094", textDim: "#6a6a60", textMuted: "#3e3e38", textFaint: "#252524",
+  green: "#3d9e4f", blue: "#4a8fd4", orange: "#c47a2e", red: "#b54a4a",
+  text: "#dce0e8", textSoft: "#a8aebb", textDim: "#6e7788", textMuted: "#454d5c", textFaint: "#2e3440",
 };
 const mono = "'JetBrains Mono', 'Fira Code', monospace";
 const heading = "'Syne', 'Inter', sans-serif";
@@ -122,21 +123,28 @@ const PROJECTS = [
     tags: ["React", "Reinforcement Learning", "Evolution Strategy", "PID Control", "Neural Networks"],
     description: "Interactive DC motor PID simulator with a built-in RL auto-tuner. A small neural network (4→32→16→3) learns to find optimal PID gains through an Evolution Strategy, evaluated against real motor dynamics. You can watch it train in real time, explore the search space it covers, and compare its solution against your own manual tuning. Includes presets based on real ABB drive setups I worked with.",
     status: "Live Demo",
-    link: "#",
+    demoId: "motor",
+  },
+  {
+    title: "PLC Logic Simulator",
+    tags: ["React", "Ladder Logic", "IEC 61131-3", "AI Analysis", "Siemens S7"],
+    description: "A visual ladder logic editor with real-time simulation and AI-powered analysis. Build PLC programs by adding rungs and elements, toggle inputs to watch signal flow through the circuit, and let the AI engine catch logic errors like contradictory contacts, duplicate coils, and missing seal-in patterns. Presets are based on real factory scenarios I worked with.",
+    status: "Live Demo",
+    demoId: "plc",
   },
   {
     title: "VOTEMAT: Blockchain Voting System",
     tags: ["Blockchain", "RSA Encryption", "Security", "Testing"],
     description: "A secure electronic voting platform built on blockchain with RSA encryption. I handled the encryption/decryption layer, wrote unit tests for vote integrity, and ran system testing throughout the dev cycle.",
     status: "Capstone Project",
-    link: null,
+    demoId: null,
   },
   {
     title: "Temperature-Controlled Watering System",
     tags: ["Arduino", "LabView", "Sensors", "Embedded"],
     description: "An Arduino-based setup that reads soil temperature through a thermistor and decides when to water automatically. Hooked it up to LabView for live data monitoring and easy threshold tweaking.",
     status: "Capstone Project",
-    link: null,
+    demoId: null,
   },
 ];
 
@@ -223,15 +231,10 @@ function ExperienceCard({ exp, index }) {
         onMouseLeave={e => e.currentTarget.style.borderColor = C.border}
       >
         <div style={{ position: "absolute", top: 0, left: 0, width: 3, height: "100%", background: C.gold, borderRadius: "0 2px 2px 0" }} />
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
-          <div>
-            <h3 style={{ fontFamily: heading, fontSize: 18, fontWeight: 700, color: C.text, margin: 0, letterSpacing: "-0.02em" }}>{exp.title}</h3>
-            <div style={{ fontFamily: body, fontSize: 14, color: C.gold, marginTop: 4 }}>{exp.company}</div>
-            <div style={{ fontFamily: mono, fontSize: 10, color: C.textDim, marginTop: 2 }}>{exp.location}</div>
-          </div>
-          <div style={{ fontFamily: mono, fontSize: 11, color: C.textDim, textAlign: "right", whiteSpace: "nowrap", marginLeft: 16 }}>
-            {exp.period}
-          </div>
+        <div style={{ marginBottom: 8 }}>
+          <h3 style={{ fontFamily: heading, fontSize: 18, fontWeight: 700, color: C.text, margin: 0, letterSpacing: "-0.02em" }}>{exp.title}</h3>
+          <div style={{ fontFamily: body, fontSize: 14, color: C.gold, marginTop: 4 }}>{exp.company}</div>
+          <div style={{ fontFamily: mono, fontSize: 10, color: C.textDim, marginTop: 2 }}>{exp.location}</div>
         </div>
         <p style={{ fontFamily: body, fontSize: 13, color: C.textSoft, lineHeight: 1.7, margin: "12px 0" }}>{exp.description}</p>
 
@@ -317,7 +320,7 @@ function ProjectCard({ project, index, onOpenDemo }) {
 // ══════════════════════════════════════════════════════════════════════
 export default function Portfolio() {
   const [activeSection, setActiveSection] = useState("about");
-  const [showDemo, setShowDemo] = useState(false);
+  const [showDemo, setShowDemo] = useState(null); // null | "motor" | "plc"
   const sectionRefs = useRef({});
 
   const setRef = useCallback((id) => (el) => { sectionRefs.current[id] = el; }, []);
@@ -431,7 +434,7 @@ export default function Portfolio() {
             <div style={{ animation: "fadeIn 0.8s ease 0.75s both", display: "flex", gap: 32, marginTop: 56 }}>
               {[
                 { label: "Years of Experience", value: "2+" },
-                { label: "Industrial Projects", value: "4" },
+                { label: "Portfolio Projects", value: "5" },
                 { label: "Motors Configured", value: "50+" },
               ].map((s, i) => (
                 <div key={i}>
@@ -495,8 +498,8 @@ export default function Portfolio() {
       <section ref={setRef("projects")} id="projects" style={{ padding: "100px 0" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 32px" }}>
           <Reveal><SectionTitle label="02" title="Projects" /></Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 20 }}>
-            {PROJECTS.map((p, i) => <ProjectCard key={p.title} project={p} index={i} onOpenDemo={p.status === "Live Demo" ? () => setShowDemo(true) : null} />)}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+            {PROJECTS.map((p, i) => <ProjectCard key={p.title} project={p} index={i} onOpenDemo={p.demoId ? () => setShowDemo(p.demoId) : null} />)}
           </div>
         </div>
       </section>
@@ -604,10 +607,10 @@ export default function Portfolio() {
       {showDemo && (
         <div style={{
           position: "fixed", inset: 0, zIndex: 9999,
-          background: "#0b0b09",
+          background: C.bg,
           animation: "fadeIn 0.3s ease both",
         }}>
-          <button onClick={() => setShowDemo(false)} style={{
+          <button onClick={() => setShowDemo(null)} style={{
             position: "fixed", top: 16, right: 20, zIndex: 10000,
             background: `${C.card}ee`, border: `1px solid ${C.border}`,
             borderRadius: 8, padding: "8px 16px", cursor: "pointer",
@@ -621,7 +624,8 @@ export default function Portfolio() {
             ← Back to Portfolio
           </button>
           <div style={{ width: "100%", height: "100%", overflow: "auto" }}>
-            <MotorControlTuner />
+            {showDemo === "motor" && <MotorControlTuner />}
+            {showDemo === "plc" && <PLCSimulator />}
           </div>
         </div>
       )}
