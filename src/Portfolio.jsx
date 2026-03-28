@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import MotorControlTuner from "./MotorControlTuner";
 import PLCSimulator from "./PLCSimulator";
+import PredictiveMaintenance from "./PredictiveMaintenance";
 
 // ══════════════════════════════════════════════════════════════════════
 //  SCROLL ANIMATION HOOK
@@ -131,6 +132,13 @@ const PROJECTS = [
     description: "A visual ladder logic editor with real-time simulation and AI-powered analysis. Build PLC programs by adding rungs and elements, toggle inputs to watch signal flow through the circuit, and let the AI engine catch logic errors like contradictory contacts, duplicate coils, and missing seal-in patterns. Presets are based on real factory scenarios I worked with.",
     status: "Live Demo",
     demoId: "plc",
+  },
+  {
+    title: "Predictive Maintenance Dashboard",
+    tags: ["React", "Anomaly Detection", "Condition Monitoring", "RUL Estimation", "Statistical Analysis"],
+    description: "Real-time condition monitoring for industrial motors with failure prediction. Simulates vibration, temperature, and current sensors with configurable fault injection (bearing wear, rotor imbalance, overload, misalignment). Uses z-score anomaly detection and linear regression on health trends to estimate remaining useful life. Motor profiles are based on ABB drives I configured at ArcelorMittal.",
+    status: "Live Demo",
+    demoId: "maintenance",
   },
   {
     title: "VOTEMAT: Blockchain Voting System",
@@ -626,6 +634,7 @@ export default function Portfolio() {
           <div style={{ width: "100%", height: "100%", overflow: "auto" }}>
             {showDemo === "motor" && <MotorControlTuner />}
             {showDemo === "plc" && <PLCSimulator />}
+            {showDemo === "maintenance" && <PredictiveMaintenance />}
           </div>
         </div>
       )}
