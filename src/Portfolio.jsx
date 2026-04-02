@@ -3,6 +3,7 @@ import MotorControlTuner from "./MotorControlTuner";
 import PLCSimulator from "./PLCSimulator";
 import PredictiveMaintenance from "./PredictiveMaintenance";
 import SCADADashboard from "./SCADADashboard";
+import DigitalTwin from "./DigitalTwin";
 
 // ══════════════════════════════════════════════════════════════════════
 //  SCROLL ANIMATION HOOK
@@ -140,6 +141,13 @@ const PROJECTS = [
     description: "Real-time condition monitoring for industrial motors with failure prediction. Simulates vibration, temperature, and current sensors with configurable fault injection (bearing wear, rotor imbalance, overload, misalignment). Uses z-score anomaly detection and linear regression on health trends to estimate remaining useful life. Motor profiles are based on ABB drives I configured at ArcelorMittal.",
     status: "Live Demo",
     demoId: "maintenance",
+  },
+  {
+    title: "Industrial Digital Twin",
+    tags: ["React", "Canvas API", "Digital Twin", "Conveyor Simulation", "Sorting Logic"],
+    description: "A real-time digital twin of an industrial conveyor sorting line. Packages travel along a moving belt, get identified by optical sensors, and are routed to output lanes by pneumatic diverter arms – 60fps Canvas animation, all client-side. Adjust belt speed, package rate, and defect rate in real time. Inject faults (belt jam, stuck diverter) to watch quality metrics degrade and recovery behavior.",
+    status: "Live Demo",
+    demoId: "twin",
   },
   {
     title: "SCADA HMI Dashboard",
@@ -450,7 +458,7 @@ export default function Portfolio() {
             <div style={{ animation: "fadeIn 0.8s ease 0.75s both", display: "flex", gap: 32, marginTop: 56 }}>
               {[
                 { label: "Years of Experience", value: "2+" },
-                { label: "Portfolio Projects", value: "6" },
+                { label: "Portfolio Projects", value: "7" },
                 { label: "Motors Configured", value: "50+" },
               ].map((s, i) => (
                 <div key={i}>
@@ -644,6 +652,7 @@ export default function Portfolio() {
             {showDemo === "plc" && <PLCSimulator />}
             {showDemo === "maintenance" && <PredictiveMaintenance />}
             {showDemo === "scada" && <SCADADashboard />}
+            {showDemo === "twin" && <DigitalTwin />}
           </div>
         </div>
       )}
