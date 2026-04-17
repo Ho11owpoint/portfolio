@@ -4,6 +4,7 @@ import PLCSimulator from "./PLCSimulator";
 import PredictiveMaintenance from "./PredictiveMaintenance";
 import SCADADashboard from "./SCADADashboard";
 import DigitalTwin from "./DigitalTwin";
+import VibrationFFTAnalyzer from "./VibrationFFTAnalyzer";
 
 // ══════════════════════════════════════════════════════════════════════
 //  SCROLL ANIMATION HOOK
@@ -155,6 +156,13 @@ const PROJECTS = [
     description: "A SCADA-style operator interface for a hot rolling mill – the kind of screen I worked with at ArcelorMittal Eisenhüttenstadt. Simulates the full line: entry coiler, roughing (R1–R4), crop shear, finishing (F1–F7), laminar cooling, and downcoiler. Real-time sensor values, inter-stand tension monitoring, fault injection (cobble, overcurrent, cooling failure, speed cascade), and a live alarm log.",
     status: "Live Demo",
     demoId: "scada",
+  },
+  {
+    title: "Vibration FFT Analyzer",
+    tags: ["React", "Signal Processing", "FFT", "Envelope Demodulation", "Bearing Diagnostics"],
+    description: "Condition monitoring tool that synthesizes realistic motor vibration with injectable bearing faults, then analyzes it with a hand-rolled FFT and envelope demodulation. Shows the time-domain waveform, raw frequency spectrum, and envelope spectrum side by side, with auto-annotated bearing fault frequencies (BPFO, BPFI, BSF, FTF). Preset tuned to an ABB ACS480 conveyor drive with an SKF 6308 bearing, plus a custom mode for editing shaft speed and bearing geometry on the fly.",
+    status: "Live Demo",
+    demoId: "vibration",
   },
   {
     title: "VOTEMAT: Blockchain Voting System",
@@ -458,7 +466,7 @@ export default function Portfolio() {
             <div style={{ animation: "fadeIn 0.8s ease 0.75s both", display: "flex", gap: 32, marginTop: 56 }}>
               {[
                 { label: "Years of Experience", value: "2+" },
-                { label: "Portfolio Projects", value: "7" },
+                { label: "Portfolio Projects", value: "8" },
                 { label: "Motors Configured", value: "50+" },
               ].map((s, i) => (
                 <div key={i}>
@@ -653,6 +661,7 @@ export default function Portfolio() {
             {showDemo === "maintenance" && <PredictiveMaintenance />}
             {showDemo === "scada" && <SCADADashboard />}
             {showDemo === "twin" && <DigitalTwin />}
+            {showDemo === "vibration" && <VibrationFFTAnalyzer />}
           </div>
         </div>
       )}
