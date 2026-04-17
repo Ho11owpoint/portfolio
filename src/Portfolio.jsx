@@ -5,6 +5,7 @@ import PredictiveMaintenance from "./PredictiveMaintenance";
 import SCADADashboard from "./SCADADashboard";
 import DigitalTwin from "./DigitalTwin";
 import VibrationFFTAnalyzer from "./VibrationFFTAnalyzer";
+import PowerQualityAnalyzer from "./PowerQualityAnalyzer";
 
 // ══════════════════════════════════════════════════════════════════════
 //  SCROLL ANIMATION HOOK
@@ -39,15 +40,15 @@ function Reveal({ children, delay = 0, direction = "up", style = {} }) {
 //  DESIGN TOKENS
 // ══════════════════════════════════════════════════════════════════════
 const C = {
-  bg: "#161a22", bgAlt: "#1b2029", panel: "#1f242e", card: "#232933",
-  border: "#2e3542", borderLight: "#3a4250",
-  gold: "#c9a227", goldBright: "#e0b830", goldDim: "#c9a22733", goldSubtle: "#c9a22712",
-  green: "#3d9e4f", blue: "#4a8fd4", orange: "#c47a2e", red: "#b54a4a",
-  text: "#dce0e8", textSoft: "#a8aebb", textDim: "#6e7788", textMuted: "#454d5c", textFaint: "#2e3440",
+  bg: "#0b0d12", bgAlt: "#11141b", panel: "#151921", card: "#171b24",
+  border: "#232833", borderLight: "#2e3440",
+  gold: "#d4a847", goldBright: "#eec269", goldDim: "#d4a84733", goldSubtle: "#d4a84712",
+  green: "#4ec9b0", blue: "#6aa0e8", orange: "#d08a3a", red: "#c25a5a",
+  text: "#e8eaf0", textSoft: "#a8aebb", textDim: "#6e7788", textMuted: "#454d5c", textFaint: "#2a2f3a",
 };
 const mono = "'JetBrains Mono', 'Fira Code', monospace";
 const heading = "'Syne', 'Inter', sans-serif";
-const body = "'Outfit', 'Inter', sans-serif";
+const body = "'Inter', 'Outfit', sans-serif";
 
 // ══════════════════════════════════════════════════════════════════════
 //  DATA
@@ -156,6 +157,7 @@ const PROJECTS = [
     description: "A SCADA-style operator interface for a hot rolling mill – the kind of screen I worked with at ArcelorMittal Eisenhüttenstadt. Simulates the full line: entry coiler, roughing (R1–R4), crop shear, finishing (F1–F7), laminar cooling, and downcoiler. Real-time sensor values, inter-stand tension monitoring, fault injection (cobble, overcurrent, cooling failure, speed cascade), and a live alarm log.",
     status: "Live Demo",
     demoId: "scada",
+    featured: true,
   },
   {
     title: "Vibration FFT Analyzer",
@@ -163,6 +165,13 @@ const PROJECTS = [
     description: "Condition monitoring tool that synthesizes realistic motor vibration with injectable bearing faults, then analyzes it with a hand-rolled FFT and envelope demodulation. Shows the time-domain waveform, raw frequency spectrum, and envelope spectrum side by side, with auto-annotated bearing fault frequencies (BPFO, BPFI, BSF, FTF). Preset tuned to an ABB ACS480 conveyor drive with an SKF 6308 bearing, plus a custom mode for editing shaft speed and bearing geometry on the fly.",
     status: "Live Demo",
     demoId: "vibration",
+  },
+  {
+    title: "Power Quality & Harmonics Analyzer",
+    tags: ["React", "Power Electronics", "FFT", "THD", "IEEE 519"],
+    description: "Three-phase voltage and current analyzer with injectable harmonic distortion. Presets cover a 6-pulse VFD, 12-pulse VFD, arc furnace, office SMPS load, and induction motor – each with realistic harmonic signatures. Computes THDv/THDi, displacement PF vs true PF, active/reactive/apparent/distortion power, K-factor for transformer derating, and runs an IEEE 519-2014 compliance check at the point of common coupling. Built on a hand-rolled Hann-windowed FFT, no libraries.",
+    status: "Live Demo",
+    demoId: "power",
   },
   {
     title: "VOTEMAT: Blockchain Voting System",
@@ -184,6 +193,20 @@ const LANGUAGES = [
   { lang: "Turkish", level: "Native", pct: 100 },
   { lang: "English", level: "C1+", pct: 90 },
   { lang: "German", level: "B2", pct: 65 },
+];
+
+const MARQUEE_ITEMS = [
+  "Siemens S7-1500", "ABB ACS880", "TIA Portal", "WinCC", "Drive Composer",
+  "EPLAN P8", "Motor Commissioning", "SCADA", "Ladder Logic", "IEC 61131-3",
+  "Python", "PyTorch", "Reinforcement Learning", "Signal Processing", "FFT",
+  "Digital Twin", "Predictive Maintenance", "Industry 4.0",
+];
+
+const CERTIFICATIONS = [
+  { title: "Siemens TIA Portal", issuer: "Siemens Industrial Training", year: "2024", kind: "Hands-on" },
+  { title: "ABB Drive Composer Pro", issuer: "ABB / On-the-job", year: "2024", kind: "Hands-on" },
+  { title: "EPLAN P8 Electrical CAD", issuer: "Self-taught + Mentorship", year: "2024", kind: "Tooling" },
+  { title: "Python for Engineers", issuer: "Coursework", year: "2023", kind: "Coursework" },
 ];
 
 // ══════════════════════════════════════════════════════════════════════
@@ -393,6 +416,8 @@ export default function Portfolio() {
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes lineGrow { from { width: 0; } to { width: 48px; } }
         @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+        @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @keyframes pulseRing { 0% { box-shadow: 0 0 0 0 ${C.gold}55; } 70% { box-shadow: 0 0 0 10px ${C.gold}00; } 100% { box-shadow: 0 0 0 0 ${C.gold}00; } }
       `}</style>
 
       <Nav active={activeSection} onNav={scrollTo} />
@@ -444,17 +469,33 @@ export default function Portfolio() {
 
             <div style={{ animation: "fadeIn 0.8s ease 0.6s both", display: "flex", gap: 10, flexWrap: "wrap" }}>
               <button onClick={() => scrollTo("projects")} style={{
-                background: C.gold, color: C.bg, border: "none", borderRadius: 8,
-                padding: "12px 28px", fontFamily: mono, fontSize: 12, fontWeight: 600,
+                background: C.gold, color: "#0b0d12", border: "none", borderRadius: 8,
+                padding: "12px 24px", fontFamily: mono, fontSize: 12, fontWeight: 600,
                 cursor: "pointer", letterSpacing: "0.03em",
                 transition: "transform 0.2s, box-shadow 0.2s",
               }}
                 onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = `0 8px 24px ${C.goldDim}`; }}
                 onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
               >View Projects</button>
+              <a href="/Egemen_Birol_CV.pdf" download style={{
+                background: "transparent", color: C.text, border: `1px solid ${C.borderLight}`, borderRadius: 8,
+                padding: "12px 22px", fontFamily: mono, fontSize: 12, fontWeight: 500,
+                cursor: "pointer", transition: "all 0.2s",
+                display: "inline-flex", alignItems: "center", gap: 8, textDecoration: "none",
+              }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = C.goldDim; e.currentTarget.style.color = C.gold; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = C.borderLight; e.currentTarget.style.color = C.text; }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                Download CV
+              </a>
               <button onClick={() => scrollTo("contact")} style={{
                 background: "transparent", color: C.textSoft, border: `1px solid ${C.border}`, borderRadius: 8,
-                padding: "12px 28px", fontFamily: mono, fontSize: 12,
+                padding: "12px 22px", fontFamily: mono, fontSize: 12,
                 cursor: "pointer", transition: "all 0.2s",
               }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = C.goldDim; e.currentTarget.style.color = C.gold; }}
@@ -466,7 +507,7 @@ export default function Portfolio() {
             <div style={{ animation: "fadeIn 0.8s ease 0.75s both", display: "flex", gap: 32, marginTop: 56 }}>
               {[
                 { label: "Years of Experience", value: "2+" },
-                { label: "Portfolio Projects", value: "8" },
+                { label: "Portfolio Projects", value: "9" },
                 { label: "Motors Configured", value: "50+" },
               ].map((s, i) => (
                 <div key={i}>
@@ -478,6 +519,36 @@ export default function Portfolio() {
           </div>
         </div>
       </section>
+
+      {/* ═══ MARQUEE STRIP ════════════════════════════════════════ */}
+      <div style={{
+        borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}`,
+        background: C.bgAlt, overflow: "hidden", padding: "18px 0", position: "relative",
+      }}>
+        <div style={{
+          position: "absolute", left: 0, top: 0, bottom: 0, width: 100, zIndex: 2,
+          background: `linear-gradient(90deg, ${C.bgAlt}, transparent)`, pointerEvents: "none",
+        }} />
+        <div style={{
+          position: "absolute", right: 0, top: 0, bottom: 0, width: 100, zIndex: 2,
+          background: `linear-gradient(270deg, ${C.bgAlt}, transparent)`, pointerEvents: "none",
+        }} />
+        <div style={{
+          display: "flex", whiteSpace: "nowrap",
+          animation: "marquee 42s linear infinite", width: "max-content",
+        }}>
+          {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((kw, i) => (
+            <span key={i} style={{
+              fontFamily: mono, fontSize: 12, color: C.textDim,
+              padding: "0 28px", display: "inline-flex", alignItems: "center", gap: 28,
+              letterSpacing: "0.02em",
+            }}>
+              {kw}
+              <span style={{ color: C.gold, opacity: 0.5 }}>◆</span>
+            </span>
+          ))}
+        </div>
+      </div>
 
       {/* ═══ SKILLS ════════════════════════════════════════════════ */}
       <section ref={setRef("skills")} id="skills" style={{ padding: "100px 0", background: C.bgAlt, borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}` }}>
@@ -530,8 +601,59 @@ export default function Portfolio() {
       <section ref={setRef("projects")} id="projects" style={{ padding: "100px 0" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 32px" }}>
           <Reveal><SectionTitle label="02" title="Projects" /></Reveal>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-            {PROJECTS.map((p, i) => <ProjectCard key={p.title} project={p} index={i} onOpenDemo={p.demoId ? () => setShowDemo(p.demoId) : null} />)}
+
+          {/* Featured project */}
+          {PROJECTS.filter(p => p.featured).map(p => (
+            <Reveal key={p.title} delay={0.05}>
+              <div style={{
+                background: `linear-gradient(135deg, ${C.card} 0%, ${C.panel} 100%)`,
+                border: `1px solid ${C.goldDim}`, borderRadius: 16,
+                padding: "36px 36px", marginBottom: 24, position: "relative", overflow: "hidden",
+                transition: "border-color 0.3s ease, transform 0.3s ease",
+              }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = C.gold; e.currentTarget.style.transform = "translateY(-3px)"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = C.goldDim; e.currentTarget.style.transform = "translateY(0)"; }}
+              >
+                <div style={{
+                  position: "absolute", top: 0, right: 0, width: 300, height: 300,
+                  background: `radial-gradient(circle, ${C.gold}12, transparent 70%)`,
+                  borderRadius: "50%", filter: "blur(50px)", pointerEvents: "none",
+                }} />
+                <div style={{ display: "flex", gap: 32, flexWrap: "wrap", alignItems: "center", position: "relative" }}>
+                  <div style={{ flex: "1 1 500px", minWidth: 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                      <span style={{ fontFamily: mono, fontSize: 9, padding: "3px 8px", borderRadius: 4, background: C.goldSubtle, color: C.gold, border: `1px solid ${C.goldDim}`, textTransform: "uppercase", letterSpacing: "0.1em" }}>★ Featured</span>
+                      <span style={{ fontFamily: mono, fontSize: 9, padding: "3px 8px", borderRadius: 4, background: `${C.green}18`, color: C.green, border: `1px solid ${C.green}33` }}>{p.status}</span>
+                    </div>
+                    <h3 style={{ fontFamily: heading, fontSize: 28, fontWeight: 700, color: C.text, margin: "0 0 12px", letterSpacing: "-0.025em" }}>{p.title}</h3>
+                    <p style={{ fontFamily: body, fontSize: 14, color: C.textSoft, lineHeight: 1.75, margin: "0 0 18px" }}>{p.description}</p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 22 }}>
+                      {p.tags.map(tag => (
+                        <span key={tag} style={{ fontFamily: mono, fontSize: 10, padding: "4px 9px", background: C.bgAlt, border: `1px solid ${C.border}`, borderRadius: 4, color: C.textDim }}>{tag}</span>
+                      ))}
+                    </div>
+                    <button onClick={() => setShowDemo(p.demoId)} style={{
+                      background: C.gold, color: "#0b0d12", border: "none", borderRadius: 8,
+                      padding: "11px 22px", fontFamily: mono, fontSize: 12, fontWeight: 600,
+                      cursor: "pointer", letterSpacing: "0.02em",
+                      display: "inline-flex", alignItems: "center", gap: 8,
+                      transition: "transform 0.2s, box-shadow 0.2s",
+                    }}
+                      onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = `0 8px 24px ${C.goldDim}`; }}
+                      onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
+                    >
+                      Launch Interactive Demo
+                      <span style={{ fontSize: 14 }}>→</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+
+          {/* Grid of other projects */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20 }}>
+            {PROJECTS.filter(p => !p.featured).map((p, i) => <ProjectCard key={p.title} project={p} index={i} onOpenDemo={p.demoId ? () => setShowDemo(p.demoId) : null} />)}
           </div>
         </div>
       </section>
@@ -578,6 +700,36 @@ export default function Portfolio() {
               </Reveal>
             ))}
           </div>
+
+          {/* Certifications & Training */}
+          <Reveal delay={0.25}>
+            <div style={{ marginTop: 56, maxWidth: 860 }}>
+              <div style={{ fontFamily: mono, fontSize: 10, color: C.gold, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 18 }}>
+                Certifications & Training
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
+                {CERTIFICATIONS.map((cert, i) => (
+                  <div key={i} style={{
+                    background: C.card, border: `1px solid ${C.border}`, borderRadius: 10,
+                    padding: "16px 18px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12,
+                    transition: "border-color 0.3s",
+                  }}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = C.goldDim}
+                    onMouseLeave={e => e.currentTarget.style.borderColor = C.border}
+                  >
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <div style={{ fontFamily: heading, fontSize: 14, fontWeight: 600, color: C.text, letterSpacing: "-0.01em", marginBottom: 2 }}>{cert.title}</div>
+                      <div style={{ fontFamily: mono, fontSize: 10, color: C.textDim }}>{cert.issuer}</div>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4 }}>
+                      <span style={{ fontFamily: mono, fontSize: 9, padding: "2px 7px", borderRadius: 4, background: C.goldSubtle, color: C.gold, border: `1px solid ${C.goldDim}` }}>{cert.kind}</span>
+                      <span style={{ fontFamily: mono, fontSize: 10, color: C.textMuted }}>{cert.year}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Reveal>
         </div>
       </section>
 
@@ -594,6 +746,7 @@ export default function Portfolio() {
           <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
             {[
               { label: "Email", value: "egemenbirol5@gmail.com", href: "mailto:egemenbirol5@gmail.com", icon: "✉" },
+              { label: "GitHub", value: "github.com/Ho11owpoint", href: "https://github.com/Ho11owpoint", icon: "◆" },
               { label: "Location", value: "Germany", href: null, icon: "◉" },
             ].map((item, i) => (
               <Reveal key={item.label} delay={0.2 + i * 0.1}>
@@ -662,6 +815,7 @@ export default function Portfolio() {
             {showDemo === "scada" && <SCADADashboard />}
             {showDemo === "twin" && <DigitalTwin />}
             {showDemo === "vibration" && <VibrationFFTAnalyzer />}
+            {showDemo === "power" && <PowerQualityAnalyzer />}
           </div>
         </div>
       )}
