@@ -6,7 +6,7 @@ import SCADADashboard from "./SCADADashboard";
 import DigitalTwin from "./DigitalTwin";
 import VibrationFFTAnalyzer from "./VibrationFFTAnalyzer";
 import PowerQualityAnalyzer from "./PowerQualityAnalyzer";
-import RobotArmIK from "./RobotArmIK";
+import KalmanFilterDemo from "./KalmanFilterDemo";
 
 // ══════════════════════════════════════════════════════════════════════
 //  SCROLL ANIMATION HOOK
@@ -175,11 +175,11 @@ const PROJECTS = [
     demoId: "power",
   },
   {
-    title: "Robotic Pick-and-Place Cell",
-    tags: ["React", "Robotics", "Inverse Kinematics", "Jacobian", "State Machine"],
-    description: "A 3-link planar manipulator picks colored boxes off a moving conveyor and sorts them into matching bins. Toggle between an analytical closed-form IK solver and an iterative damped least-squares Jacobian solver to see the same scene driven by two different inverse-kinematics strategies. Live joint-angle readouts, success rate, and cycle-time stats. Built around a 9-state pickup→travel→drop→return state machine.",
+    title: "Kalman Filter — IMU + GPS Sensor Fusion",
+    tags: ["React", "Kalman Filter", "Sensor Fusion", "IMU", "GPS"],
+    description: "A 2D vehicle drives a closed loop while a linear Kalman filter fuses high-rate noisy IMU acceleration with slow noisy GPS fixes. The IMU drives the predict step, GPS supplies the measurement update. Toggle layers to see raw GPS dots, dead-reckoning drift, and the live 1σ/2σ uncertainty ellipse. Hit GPS BLACKOUT to cut GPS for 5 seconds and watch the covariance grow until the next fix snaps the estimate back.",
     status: "Live Demo",
-    demoId: "robotarm",
+    demoId: "kalman",
   },
   {
     title: "VOTEMAT: Blockchain Voting System",
@@ -824,7 +824,7 @@ export default function Portfolio() {
             {showDemo === "twin" && <DigitalTwin />}
             {showDemo === "vibration" && <VibrationFFTAnalyzer />}
             {showDemo === "power" && <PowerQualityAnalyzer />}
-            {showDemo === "robotarm" && <RobotArmIK />}
+            {showDemo === "kalman" && <KalmanFilterDemo />}
           </div>
         </div>
       )}
