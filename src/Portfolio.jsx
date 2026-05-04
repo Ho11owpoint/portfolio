@@ -6,6 +6,7 @@ import SCADADashboard from "./SCADADashboard";
 import DigitalTwin from "./DigitalTwin";
 import VibrationFFTAnalyzer from "./VibrationFFTAnalyzer";
 import PowerQualityAnalyzer from "./PowerQualityAnalyzer";
+import RobotArmIK from "./RobotArmIK";
 
 // ══════════════════════════════════════════════════════════════════════
 //  SCROLL ANIMATION HOOK
@@ -172,6 +173,13 @@ const PROJECTS = [
     description: "Three-phase voltage and current analyzer with injectable harmonic distortion. Presets cover a 6-pulse VFD, 12-pulse VFD, arc furnace, office SMPS load, and induction motor – each with realistic harmonic signatures. Computes THDv/THDi, displacement PF vs true PF, active/reactive/apparent/distortion power, K-factor for transformer derating, and runs an IEEE 519-2014 compliance check at the point of common coupling. Built on a hand-rolled Hann-windowed FFT, no libraries.",
     status: "Live Demo",
     demoId: "power",
+  },
+  {
+    title: "Robotic Pick-and-Place Cell",
+    tags: ["React", "Robotics", "Inverse Kinematics", "Jacobian", "State Machine"],
+    description: "A 3-link planar manipulator picks colored boxes off a moving conveyor and sorts them into matching bins. Toggle between an analytical closed-form IK solver and an iterative damped least-squares Jacobian solver to see the same scene driven by two different inverse-kinematics strategies. Live joint-angle readouts, success rate, and cycle-time stats. Built around a 9-state pickup→travel→drop→return state machine.",
+    status: "Live Demo",
+    demoId: "robotarm",
   },
   {
     title: "VOTEMAT: Blockchain Voting System",
@@ -816,6 +824,7 @@ export default function Portfolio() {
             {showDemo === "twin" && <DigitalTwin />}
             {showDemo === "vibration" && <VibrationFFTAnalyzer />}
             {showDemo === "power" && <PowerQualityAnalyzer />}
+            {showDemo === "robotarm" && <RobotArmIK />}
           </div>
         </div>
       )}
